@@ -1,0 +1,569 @@
+:root {
+  --scene-a: #3b2b52;
+  --scene-b: #1e2340;
+}
+
+* { scrollbar-width: thin; scrollbar-color: #6d28d9 #1e1b2e; }
+
+body.bg-app {
+  background:
+    radial-gradient(circle at 15% 0%, rgba(217, 70, 239, 0.10), transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.08), transparent 40%),
+    #0f0e1a;
+}
+
+.card {
+  background: rgba(30, 27, 46, 0.72);
+  border: 1px solid rgba(148, 122, 214, 0.18);
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px -12px rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 0.9rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: white;
+  background: linear-gradient(135deg, #d946ef, #7c3aed);
+  box-shadow: 0 8px 20px -6px rgba(217, 70, 239, 0.5);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  padding: 0.55rem 1rem;
+  border-radius: 0.8rem;
+  font-weight: 600;
+  color: #e2d9f7;
+  background: rgba(148, 122, 214, 0.12);
+  border: 1px solid rgba(148, 122, 214, 0.25);
+  transition: background .15s ease, transform .15s ease;
+}
+.btn-ghost:hover { background: rgba(148, 122, 214, 0.24); }
+.btn-ghost:active { transform: translateY(1px); }
+
+.choice-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.85rem 1.1rem;
+  border-radius: 0.9rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(148, 122, 214, 0.22);
+  color: #f1eefc;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  transition: background .15s ease, border-color .15s ease, transform .1s ease;
+}
+.choice-btn:hover {
+  background: rgba(217, 70, 239, 0.14);
+  border-color: rgba(217, 70, 239, 0.5);
+  transform: translateX(2px);
+}
+.choice-btn .tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  background: rgba(148, 122, 214, 0.25);
+  color: #e2d9f7;
+}
+
+.scene-bg {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.scene-bg::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,9,20,0.92) 10%, rgba(10,9,20,0.35) 60%, rgba(10,9,20,0.15));
+}
+.scene-bg > div { position: relative; z-index: 1; }
+
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(148,122,214,0.18);
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+.stat-bar {
+  width: 3.5rem;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+.stat-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width .4s ease;
+}
+
+.char-card {
+  cursor: pointer;
+  border-radius: 1.1rem;
+  padding: 1.1rem;
+  background: rgba(30, 27, 46, 0.72);
+  border: 1px solid rgba(148, 122, 214, 0.18);
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+.char-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(217, 70, 239, 0.55);
+  background: rgba(45, 33, 66, 0.85);
+}
+
+.contact-card {
+  border-radius: 1rem;
+  padding: 0.9rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(148, 122, 214, 0.2);
+  text-align: left;
+  transition: background .15s ease, border-color .15s ease;
+}
+.contact-card:hover:not(:disabled) {
+  background: rgba(217, 70, 239, 0.12);
+  border-color: rgba(217, 70, 239, 0.5);
+}
+.contact-card:disabled { opacity: .5; cursor: default; }
+
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(6, 5, 12, 0.72);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+}
+.modal-card {
+  width: 100%; max-width: 640px;
+  max-height: 85vh;
+  background: #191627;
+  border: 1px solid rgba(148, 122, 214, 0.25);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 20px 60px -15px rgba(0,0,0,0.7);
+  animation: modalIn .18s ease-out;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.fade-in { animation: fadeIn .35s ease-out; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.resource-card {
+  border-radius: 1rem;
+  padding: 1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(148, 122, 214, 0.2);
+}
+.resource-card.locked {
+  opacity: .45;
+  filter: grayscale(0.4);
+}
+
+/* ---------- Avatares ---------- */
+.avatar-svg { width: 100%; height: 100%; display: block; }
+.portrait-wrap {
+  width: 92px; height: 92px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(217, 70, 239, 0.5);
+  padding: 4px;
+  box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5);
+}
+@media (min-width: 640px) { .portrait-wrap { width: 116px; height: 116px; } }
+
+/* ---------- Chat estilo WhatsApp ---------- */
+.chat-phone {
+  max-width: 420px;
+  margin: 0 auto;
+  background: #0b1414;
+  border: 1px solid rgba(148,122,214,0.2);
+  border-radius: 1rem;
+  padding: 0.9rem;
+  min-height: 120px;
+}
+.chat-bubble {
+  max-width: 78%;
+  padding: 0.55rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  margin-bottom: 0.5rem;
+  animation: bubbleIn .25s ease-out;
+}
+@keyframes bubbleIn {
+  from { opacity: 0; transform: translateY(6px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.chat-bubble.them {
+  background: #262f30;
+  color: #f1f1f1;
+  border-bottom-left-radius: 0.25rem;
+  margin-right: auto;
+}
+.chat-bubble.me {
+  background: #005c4b;
+  color: #eafff8;
+  border-bottom-right-radius: 0.25rem;
+  margin-left: auto;
+}
+
+/* ---------- Minijuego: chips seleccionables ---------- */
+.flag-chip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.85rem;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(148, 122, 214, 0.22);
+  color: #f1eefc;
+  font-size: 0.88rem;
+  transition: all .12s ease;
+}
+.flag-chip:hover:not(:disabled) { border-color: rgba(217, 70, 239, 0.5); background: rgba(217,70,239,0.08); }
+.flag-chip.selected { border-color: #d946ef; background: rgba(217,70,239,0.18); }
+.flag-chip.correct { border-color: #34d399; background: rgba(52,211,153,0.14); }
+.flag-chip.incorrect { border-color: #fb7185; background: rgba(251,113,133,0.14); }
+.flag-chip:disabled { cursor: default; }
+.flag-chip .explain { display: block; margin-top: 0.3rem; font-size: 0.78rem; color: #cbd5e1; }
+
+/* ---------- Modo taller: tally ---------- */
+.tally-row { display: flex; align-items: center; gap: 0.7rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(148,122,214,0.2); border-radius: 0.85rem; padding: 0.7rem 0.9rem; }
+.tally-stepper { display: flex; align-items: center; gap: 0.5rem; }
+.tally-stepper button { width: 1.9rem; height: 1.9rem; border-radius: 999px; background: rgba(217,70,239,0.18); color: #fff; font-weight: 800; }
+.tally-stepper input { width: 2.6rem; text-align: center; background: transparent; color: white; font-weight: 700; border: none; }
+
+/* ---------- Logros ---------- */
+.achievement-toast {
+  position: fixed; top: 4.2rem; right: 1rem; z-index: 500;
+  background: linear-gradient(135deg, #fbbf24, #d97706);
+  color: #1a1103; font-weight: 700; font-size: 0.85rem;
+  padding: 0.7rem 1rem; border-radius: 0.9rem;
+  box-shadow: 0 10px 30px -8px rgba(217,119,6,0.6);
+  display: flex; align-items: center; gap: 0.5rem;
+  animation: toastIn .3s ease-out;
+  max-width: 280px;
+}
+.achievement-toast.hidden { display: none; }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.badge-card {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 0.85rem;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.85rem;
+}
+.badge-card.locked { opacity: .35; filter: grayscale(1); }
+
+/* ---------- Accesibilidad ---------- */
+.a11y-opt-btn {
+  padding: 0.5rem 0; border-radius: 0.7rem; font-weight: 800;
+  background: rgba(255,255,255,0.06); border: 1.5px solid rgba(148,122,214,0.25); color: #f1eefc;
+}
+.a11y-opt-btn.active { background: rgba(217,70,239,0.25); border-color: #d946ef; }
+.a11y-toggle {
+  width: 44px; height: 24px; border-radius: 999px; background: rgba(255,255,255,0.15);
+  position: relative; transition: background .15s ease; flex-shrink: 0;
+}
+.a11y-toggle span {
+  position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 999px;
+  background: white; transition: transform .15s ease;
+}
+.a11y-toggle[aria-checked="true"] { background: #d946ef; }
+.a11y-toggle[aria-checked="true"] span { transform: translateX(20px); }
+
+/* Escalas de tamaño de letra */
+body.text-scale-sm { font-size: 0.92rem; }
+body.text-scale-lg { font-size: 1.14rem; }
+
+/* Alto contraste */
+body.high-contrast { background: #000 !important; }
+body.high-contrast .card, body.high-contrast .modal-card,
+body.high-contrast .choice-btn, body.high-contrast .contact-card,
+body.high-contrast .resource-card, body.high-contrast .flag-chip,
+body.high-contrast .tally-row, body.high-contrast .chat-phone {
+  background: #000 !important; border-color: #fff !important; border-width: 2px !important;
+}
+body.high-contrast .scene-bg { background: #000 !important; }
+body.high-contrast .scene-bg::before { background: rgba(0,0,0,0.55); }
+body.high-contrast p, body.high-contrast span, body.high-contrast li, body.high-contrast h1,
+body.high-contrast h2, body.high-contrast h3, body.high-contrast label {
+  color: #fff !important;
+}
+body.high-contrast .btn-primary { background: #ffdd00 !important; color: #000 !important; box-shadow: none; }
+body.high-contrast .btn-ghost { background: #000 !important; border: 2px solid #fff !important; color: #fff !important; }
+body.high-contrast .stat-bar { background: #333 !important; border: 1px solid #fff; }
+body.high-contrast .chat-bubble.them { background: #1a1a1a !important; border: 1px solid #fff; }
+body.high-contrast .chat-bubble.me { background: #003d33 !important; border: 1px solid #0f0; }
+
+/* Animación de cambio de expresión del avatar */
+.portrait-wrap.mood-change, #hudAvatar.mood-change { animation: moodPulse .45s ease-out; }
+@keyframes moodPulse {
+  0% { transform: scale(0.85); opacity: 0.4; }
+  60% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ---------- Impresión: ficha de red de apoyo ---------- */
+@media print {
+  body * { visibility: hidden; }
+  #actionPlanPrintable, #actionPlanPrintable *,
+  #finalActionPlanPrintable, #finalActionPlanPrintable * { visibility: visible; }
+  #actionPlanPrintable, #finalActionPlanPrintable { position: absolute; top: 0; left: 0; width: 100%; }
+}
+
+/* ============================================================
+   MAPA MUNDIAL (plataformas) — canvas, HUD, controles táctiles
+   ============================================================ */
+#introLogo { cursor: pointer; border: none; }
+.logo-glow { animation: logoGlow 2.6s ease-in-out infinite; }
+@keyframes logoGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(217,70,239,0.0), 0 8px 20px -6px rgba(217,70,239,0.35); }
+  50% { box-shadow: 0 0 26px 6px rgba(217,70,239,0.45), 0 8px 24px -4px rgba(124,58,237,0.5); }
+}
+
+#mapGameContainer {
+  position: relative;
+  background: #1a0a2e;
+  user-select: none;
+  transform-origin: center;
+  transition: transform .4s ease, opacity .4s ease;
+}
+#mapGameContainer.door-closing { transform: scaleX(0.02); opacity: 0; }
+#mapCanvas { display: block; margin: 0 auto; max-width: 100%; }
+#mapMessageBox {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,5,30,0.94);
+  border: 1.5px solid #a78bfa;
+  border-radius: 12px;
+  padding: 10px 16px;
+  color: #e9d5ff;
+  font-size: 12.5px;
+  text-align: center;
+  max-width: 320px;
+  z-index: 20;
+  line-height: 1.5;
+}
+#mapMessageBox strong { color: #c4b5fd; display: block; margin-bottom: 3px; font-size: 13px; }
+#mapControls { background: rgba(0,0,0,0.35); }
+.ctrl-btn {
+  background: rgba(167,139,250,0.22);
+  border: 1.5px solid rgba(167,139,250,0.55);
+  color: #e9d5ff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 46px;
+  text-align: center;
+  transition: background .15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.ctrl-btn:active { background: rgba(167,139,250,0.5); }
+.jump-btn { background: rgba(251,191,36,0.22); border-color: rgba(251,191,36,0.55); color: #fef3c7; padding: 8px 20px; }
+.jump-btn:active { background: rgba(251,191,36,0.5); }
+#mapHearts .heart { font-size: 15px; }
+
+/* Fundido blanco al volver de la novela visual al mapa */
+.screen-fade-white {
+  position: fixed; inset: 0; background: #fff; z-index: 999; opacity: 0;
+  pointer-events: none; transition: opacity .5s ease;
+}
+.screen-fade-white.active { opacity: 1; pointer-events: all; }
+
+/* Modo proyector: texto más grande y controles simplificados para taller */
+body.projector-mode { font-size: 1.2rem; }
+body.projector-mode .btn-primary, body.projector-mode .btn-ghost, body.projector-mode .choice-btn {
+  font-size: 1.05em;
+  padding-top: 1rem; padding-bottom: 1rem;
+}
+
+/* ---------- Grafo de red final ---------- */
+#finalNetworkGraphWrap svg { max-width: 100%; height: auto; }
+.final-node-label { font-size: 10px; fill: #cbd5e1; }
+
+/* ============================================================
+   NEXA — mascota consejera (assets/img/*.png)
+   ============================================================ */
+.nexa-tip-btn {
+  border-radius: 999px;
+  border: 2px solid rgba(103, 232, 249, 0.55);
+  background: #0a1420 center/cover no-repeat;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.nexa-tip-btn--float {
+  position: absolute;
+  right: 10px;
+  bottom: 66px;
+  width: 46px; height: 46px;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.45), 0 6px 14px -4px rgba(0,0,0,0.6);
+  z-index: 15;
+  animation: nexaFloat 2.6s ease-in-out infinite;
+}
+.nexa-tip-btn--inline {
+  width: 34px; height: 34px;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+@keyframes nexaFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.nexa-tip-bubble {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(92vw, 360px);
+  background: rgba(8, 12, 24, 0.96);
+  border: 1.5px solid rgba(103, 232, 249, 0.5);
+  border-radius: 1rem;
+  padding: 10px 12px;
+  box-shadow: 0 14px 34px -10px rgba(0,0,0,0.7);
+  z-index: 210;
+  animation: nexaBubbleIn .25s ease-out;
+}
+.nexa-tip-bubble.hidden { display: none; }
+@keyframes nexaBubbleIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.nexa-tip-bubble.nexa-pulse { animation: nexaPulse .35s ease-out; }
+@keyframes nexaPulse {
+  0% { transform: translateX(-50%) scale(0.96); }
+  50% { transform: translateX(-50%) scale(1.03); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+.nexa-tip-bubble img { width: 52px; height: 52px; border-radius: 0.75rem; object-fit: cover; flex-shrink: 0; }
+.nexa-tip-text { min-width: 0; flex: 1; }
+.nexa-tip-name { font-size: 11px; font-weight: 800; color: #67e8f9; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+#nexaTipText { font-size: 12.5px; line-height: 1.4; color: #e2f4fb; }
+#nexaTipReplay, #nexaTipClose {
+  align-self: flex-start;
+  color: #7dd3fc;
+  font-size: 13px;
+  padding: 2px 4px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   VALENTINA — acompañante visible dentro de las historias
+   ============================================================ */
+.valentina-companion {
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+  animation: valentinaBob 3.2s ease-in-out infinite;
+}
+.valentina-companion.hidden { display: none; }
+.valentina-companion-svg {
+  width: 46px; height: 54px;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+}
+.valentina-companion-label {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #e9d5ff;
+  background: rgba(88, 28, 135, 0.75);
+  border: 1px solid rgba(217, 70, 239, 0.4);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+@keyframes valentinaBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@media (min-width: 640px) { .valentina-companion { left: 20px; bottom: 20px; } }
+
+/* ============================================================
+   NOVELA VISUAL — integración visual con el resto del juego.
+   Solo redefine apariencia: engine.js sigue usando los mismos
+   IDs y las mismas clases "hidden"/"mood-change" para su lógica,
+   esto no las toca.
+   ============================================================ */
+#sceneWrap {
+  border-radius: 1.5rem;
+  border: 1.5px solid rgba(217, 70, 239, 0.3);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.35), 0 22px 55px -18px rgba(0,0,0,0.8), 0 0 34px -10px rgba(167,139,250,0.35);
+}
+.scene-bg { min-height: 300px; }
+@media (min-width: 640px) { .scene-bg { min-height: 400px; } }
+.scene-bg::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 12% 20%, rgba(255,255,255,0.55) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 78% 15%, rgba(255,255,255,0.4) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 45% 35%, rgba(255,255,255,0.3) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 88% 55%, rgba(255,255,255,0.45) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 25% 65%, rgba(255,255,255,0.35) 0 1px, transparent 1.5px);
+  background-size: 220px 220px;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+  animation: sceneStars 30s linear infinite;
+}
+@keyframes sceneStars {
+  from { background-position: 0 0; }
+  to { background-position: -220px 220px; }
+}
+.portrait-wrap {
+  width: 130px; height: 130px;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.3), 0 0 34px -4px rgba(217,70,239,0.55), 0 10px 24px -8px rgba(0,0,0,0.6);
+}
+@media (min-width: 640px) { .portrait-wrap { width: 190px; height: 190px; } }
+
+#choicesWrap, #networkNode, #chatNode, #minigameNode, #tallyNode {
+  background: linear-gradient(180deg, rgba(10,9,20,0.5), rgba(9,8,18,0.9) 45%);
+  border-top: 1px solid rgba(217,70,239,0.2);
+}
+#feedbackWrap { border-top: 1.5px solid rgba(217,70,239,0.32); }

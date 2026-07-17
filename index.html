@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>Mi Red de Apoyo · Juego educativo</title>
+<meta name="description" content="Videojuego educativo de simulación social sobre construcción de redes de apoyo frente a la violencia. Alcaldía Local de San Cristóbal, Bogotá." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css?v=2" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤝</text></svg>">
+</head>
+<body class="min-h-screen bg-app text-slate-100 antialiased">
+
+  <!-- BARRA SUPERIOR PERSISTENTE: logos institucionales + accesos rápidos (visible en toda la ejecución) -->
+  <header id="topBar" class="sticky top-0 z-[999] w-full bg-white shadow-lg flex items-center justify-between gap-2 px-3 py-2">
+    <img id="headerLogo" src="assets/img/logos-institucionales.png" alt="Alcaldía Mayor de Bogotá D.C · Alcaldía Local de San Cristóbal · Bogotá"
+      class="h-8 sm:h-10 w-auto" onerror="this.style.display='none'" />
+    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <button id="btnA11y" title="Opciones de accesibilidad"
+        class="flex items-center gap-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-white text-[11px] sm:text-sm font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 transition">
+        <span aria-hidden="true">⚙️</span><span class="hidden sm:inline">Accesibilidad</span>
+      </button>
+      <button id="quickExitBtn" title="Salir de inmediato de esta página"
+        class="flex items-center gap-1.5 rounded-full bg-red-600 hover:bg-red-500 text-white text-[11px] sm:text-sm font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 transition">
+        <span aria-hidden="true">⨯</span><span class="hidden sm:inline">Salida rápida</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="achievementToast" class="achievement-toast hidden"></div>
+
+  <div id="app" class="relative mx-auto min-h-screen w-full max-w-5xl px-3 sm:px-6 pb-10">
+
+    <!-- ============ PANTALLA: PORTADA / CONSENTIMIENTO ============ -->
+    <section id="screen-intro" data-screen class="pt-8 sm:pt-12">
+      <div id="resumeBanner" class="hidden card p-4 sm:p-5 mb-6 max-w-lg mx-auto flex items-center justify-between gap-3 flex-wrap border-fuchsia-500/40">
+        <p class="text-sm text-slate-200">🕹️ Tienes una partida sin terminar de <strong id="resumeCharName"></strong>. Se borra si cierras esta pestaña.</p>
+        <div class="flex gap-2">
+          <button id="resumeContinueBtn" class="btn-primary !text-xs !py-2">Continuar</button>
+          <button id="resumeDiscardBtn" class="btn-ghost !text-xs !py-2">Empezar de nuevo</button>
+        </div>
+      </div>
+      <div class="text-center mb-8">
+        <button id="introLogo" type="button" aria-label="Mi Red de Apoyo" class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-fuchsia-500 to-violet-600 text-4xl shadow-lg shadow-fuchsia-900/40 logo-glow">🤝</button>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-300 via-violet-200 to-sky-300">Mi Red de Apoyo</h1>
+        <p class="mt-2 text-slate-300 text-sm sm:text-base">Simulación social · Novela visual interactiva</p>
+        <p class="mt-1 text-xs text-slate-400">Componente "Acciones pedagógicas para la resolución de conflictos" · Alcaldía Local de San Cristóbal, Bogotá</p>
+      </div>
+
+      <div class="card p-5 sm:p-7 space-y-4">
+        <h2 class="font-bold text-lg text-fuchsia-200">Antes de empezar</h2>
+        <p class="text-sm sm:text-base text-slate-200 leading-relaxed">
+          Este juego presenta historias ficticias, inspiradas de forma anónima en experiencias reales de mujeres en Bogotá, sobre
+          violencia en la pareja, laboral, callejera y digital. El objetivo es practicar, en un espacio seguro, cómo identificar señales
+          de alerta, construir redes de apoyo y conocer rutas de atención — <span class="font-semibold text-white">no busca revivir ni juzgar experiencias personales.</span>
+        </p>
+        <ul class="grid sm:grid-cols-2 gap-3 text-sm">
+          <li class="flex gap-2 items-start"><span class="text-emerald-400">✓</span><span>Puedes detenerte, respirar o salir en cualquier momento.</span></li>
+          <li class="flex gap-2 items-start"><span class="text-emerald-400">✓</span><span>No hay respuestas "perdedoras": cada decisión enseña algo.</span></li>
+          <li class="flex gap-2 items-start"><span class="text-emerald-400">✓</span><span>Al final encontrarás un directorio real de apoyo en Bogotá.</span></li>
+          <li class="flex gap-2 items-start"><span class="text-emerald-400">✓</span><span>Ideal para jugarse en grupo, con acompañamiento de facilitación.</span></li>
+        </ul>
+        <div class="rounded-xl bg-rose-950/60 border border-rose-800/60 p-3.5 text-xs sm:text-sm text-rose-100">
+          <strong>Si en este momento vives una situación de riesgo inmediato</strong>, comunícate ya a la Línea 123 (Emergencias Bogotá)
+          o a la Línea Púrpura 01 8000 112 137. Este juego es una herramienta educativa, no un servicio de emergencia.
+        </div>
+        <label class="flex items-start gap-3 text-sm text-slate-300 pt-1">
+          <input id="consentCheck" type="checkbox" class="mt-1 h-4 w-4 rounded border-slate-500 bg-slate-800 text-fuchsia-500 focus:ring-fuchsia-500" />
+          <span>Entiendo el propósito educativo del juego y deseo continuar.</span>
+        </label>
+
+        <div class="rounded-xl bg-slate-800/50 border border-slate-700 p-3.5">
+          <p class="text-sm font-semibold text-slate-200 mb-2">¿Cómo vas a jugar hoy?</p>
+          <div class="grid sm:grid-cols-2 gap-2">
+            <label class="flex items-start gap-2 text-xs sm:text-sm text-slate-300 rounded-lg border border-slate-700 p-2.5 cursor-pointer has-[:checked]:border-fuchsia-500 has-[:checked]:bg-fuchsia-500/10">
+              <input type="radio" name="playMode" value="individual" checked class="mt-0.5" />
+              <span><strong class="block text-slate-100">Individual</strong>Cada participante decide y avanza sola.</span>
+            </label>
+            <label class="flex items-start gap-2 text-xs sm:text-sm text-slate-300 rounded-lg border border-slate-700 p-2.5 cursor-pointer has-[:checked]:border-fuchsia-500 has-[:checked]:bg-fuchsia-500/10">
+              <input type="radio" name="playMode" value="taller" class="mt-0.5" />
+              <span><strong class="block text-slate-100">Modo taller (grupal)</strong>Una pantalla proyectada; la facilitadora registra los votos a mano alzada de las 20 participantes.</span>
+            </label>
+          </div>
+        </div>
+
+        <button id="startBtn" disabled
+          class="btn-primary w-full sm:w-auto disabled:opacity-40 disabled:cursor-not-allowed">
+          Comenzar → Elegir personaje
+        </button>
+      </div>
+
+      <div class="mt-4 text-center">
+        <button id="skipToResources" class="text-xs text-slate-400 hover:text-slate-200 underline underline-offset-2">Ver directorio de recursos de apoyo sin jugar</button>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA: REGISTRO DE PARTICIPANTE ============ -->
+    <section id="screen-register" data-screen class="hidden pt-14 sm:pt-20">
+      <div class="text-center mb-6">
+        <div class="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-fuchsia-500 to-violet-600 text-3xl shadow-lg">📝</div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold">Antes de jugar, regístrate</h1>
+        <p class="mt-1 text-slate-300 text-sm max-w-lg mx-auto">Esto nos permite llevar el registro de asistencia de la sesión y enviarte por correo el resumen de tus logros al terminar.</p>
+      </div>
+
+      <div id="regStep1" class="card p-5 sm:p-7 space-y-4 max-w-lg mx-auto">
+        <div>
+          <label class="text-sm font-semibold text-slate-200" for="regName">Nombre completo</label>
+          <input id="regName" type="text" placeholder="Ej: María Fernanda Gómez" autocomplete="name"
+            class="mt-1.5 w-full rounded-xl bg-slate-800/70 border border-slate-600 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-fuchsia-500" />
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-200" for="regAge">Rango de edad</label>
+          <select id="regAge"
+            class="mt-1.5 w-full rounded-xl bg-slate-800/70 border border-slate-600 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
+            <option value="">Selecciona un rango…</option>
+            <option value="10-14">10 a 14 años</option>
+            <option value="15-17">15 a 17 años</option>
+            <option value="18-25">18 a 25 años</option>
+            <option value="26-35">26 a 35 años</option>
+            <option value="36-45">36 a 45 años</option>
+            <option value="46-59">46 a 59 años</option>
+            <option value="60+">60 años o más</option>
+          </select>
+          <p class="text-xs text-slate-400 mt-1">Usamos rangos, no tu edad exacta, para proteger tu privacidad.</p>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-200" for="regEmail">Correo electrónico</label>
+          <input id="regEmail" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email"
+            class="mt-1.5 w-full rounded-xl bg-slate-800/70 border border-slate-600 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-fuchsia-500" />
+          <p class="text-xs text-slate-400 mt-1">Te enviaremos un código para confirmar que es un correo real, y luego el resumen de tus insignias.</p>
+        </div>
+
+        <label class="flex items-start gap-3 text-xs sm:text-sm text-slate-300 pt-1">
+          <input id="regConsent" type="checkbox" class="mt-1 h-4 w-4 rounded border-slate-500 bg-slate-800 text-fuchsia-500 focus:ring-fuchsia-500" />
+          <span>Autorizo el tratamiento de mi nombre, edad y correo para efectos de registro de asistencia y envío de resultados de esta actividad pedagógica, conforme a la Ley 1581 de 2012. Mis datos no se usarán para ningún otro fin.</span>
+        </label>
+
+        <button id="regSubmitBtn" disabled
+          class="btn-primary w-full sm:w-auto disabled:opacity-40 disabled:cursor-not-allowed">
+          Enviar código de verificación →
+        </button>
+        <p id="regStatus" class="text-xs text-slate-400"></p>
+      </div>
+
+      <div id="regStep2" class="hidden card p-5 sm:p-7 space-y-4 max-w-lg mx-auto">
+        <p class="text-sm text-slate-200">📩 Enviamos un código de 6 dígitos a <strong id="regStep2Email"></strong>. Revisa también la carpeta de spam.</p>
+        <div>
+          <label class="text-sm font-semibold text-slate-200" for="regCode">Código de verificación</label>
+          <input id="regCode" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
+            class="mt-1.5 w-full rounded-xl bg-slate-800/70 border border-slate-600 px-3.5 py-2.5 text-lg tracking-[0.3em] text-center text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-fuchsia-500" />
+        </div>
+        <button id="regVerifyBtn" class="btn-primary w-full sm:w-auto">Verificar y continuar →</button>
+        <p class="text-center">
+          <button id="regResendBtn" class="text-xs text-slate-400 hover:text-slate-200 underline underline-offset-2">Reenviar código</button>
+        </p>
+        <p id="regStep2Status" class="text-xs text-slate-400"></p>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA: SELECCIÓN DE PERSONAJE (ruta accesible alterna) ============ -->
+    <section id="screen-select" data-screen class="hidden pt-6 sm:pt-8">
+      <div class="text-center mb-6">
+        <button id="btnBackToMapFromSelect" class="btn-ghost !text-xs mb-3">← Volver al mapa</button>
+        <h2 class="text-2xl sm:text-3xl font-extrabold">¿A quién vas a acompañar hoy?</h2>
+        <p class="text-slate-300 text-sm mt-1 max-w-2xl mx-auto">Historias de la vida cotidiana en Bogotá, organizadas por capítulos. Cada una enfrenta un tipo distinto de violencia — y una red de apoyo distinta esperándola.</p>
+      </div>
+      <div id="characterGrid" class="grid sm:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- ============ PANTALLA: MAPA MUNDIAL (plataformas — hub principal) ============ -->
+    <section id="screen-worldmap" data-screen class="hidden pt-2 sm:pt-3">
+      <div class="card p-2 sm:p-3 mb-2 flex flex-wrap items-center gap-3 justify-between">
+        <div class="flex items-center gap-2">
+          <div class="hearts flex gap-1" id="mapHearts"></div>
+        </div>
+        <div id="mapZoneLabel" class="text-sm font-bold text-fuchsia-200">Zona 1: El Vecindario</div>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <span class="text-sm font-semibold">⭐ <span id="mapScoreDisplay">0</span></span>
+          <button id="btnMapMute" class="btn-ghost !px-2 !py-1.5 text-sm" title="Silenciar / activar sonido">🔊</button>
+          <button id="btnMapResources" class="btn-ghost !text-xs sm:!text-sm">📖 Recursos</button>
+          <button id="btnMapAccessible" class="btn-ghost !text-xs sm:!text-sm" title="Ver todas las historias sin jugar el mapa">📋 Modo accesible</button>
+        </div>
+      </div>
+
+      <div id="mapNetworkBar" class="card p-2 mb-2">
+        <div class="flex items-center justify-between text-[11px] sm:text-xs text-slate-300 mb-1">
+          <span>🕸️ Tu red de apoyo</span>
+          <span id="mapNetworkPct">0%</span>
+        </div>
+        <div class="stat-bar" style="width:100%; height:7px;"><div id="mapNetworkFill" class="stat-fill bg-fuchsia-400" style="width:0%"></div></div>
+        <button id="btnGoFinalNetwork" class="btn-primary hidden w-full mt-2 !text-sm">🕸️ Ver mi Red Tejida completa →</button>
+      </div>
+
+      <div id="mapGameContainer" class="card overflow-hidden relative">
+        <canvas id="mapCanvas"></canvas>
+        <div id="mapMessageBox" class="hidden"></div>
+        <button id="btnNexaTip" type="button" aria-label="Consejo de Nexa" class="nexa-tip-btn nexa-tip-btn--float"></button>
+        <div id="mapControls" class="flex justify-between items-center px-3 py-1.5">
+          <div class="flex gap-2">
+            <button class="ctrl-btn" id="mapBtnLeft" aria-label="Mover a la izquierda">◀</button>
+            <button class="ctrl-btn" id="mapBtnRight" aria-label="Mover a la derecha">▶</button>
+          </div>
+          <button class="ctrl-btn jump-btn" id="mapBtnJump" aria-label="Saltar">↑ Saltar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BURBUJA: TIP DE NEXA ============ -->
+    <div id="nexaTipBubble" class="nexa-tip-bubble hidden">
+      <img id="nexaTipImg" src="" alt="Nexa" />
+      <div class="nexa-tip-text">
+        <p class="nexa-tip-name">Nexa</p>
+        <p id="nexaTipText"></p>
+      </div>
+      <button id="nexaTipReplay" type="button" aria-label="Escuchar de nuevo">🔊</button>
+      <button id="nexaTipClose" type="button" aria-label="Cerrar consejo">✕</button>
+    </div>
+
+    <!-- ============ VALENTINA: acompañante dentro de las historias ============ -->
+    <div id="valentinaCompanion" class="valentina-companion hidden" title="Valentina te acompaña dentro de esta historia — así ves y decides tú también.">
+      <svg viewBox="0 0 60 70" class="valentina-companion-svg" role="img" aria-label="Valentina, tu personaje, observando esta historia contigo">
+        <ellipse cx="30" cy="66" rx="14" ry="3" fill="rgba(0,0,0,0.25)"/>
+        <path d="M22 40 L18 62 L26 62 L29 44 L32 62 L40 62 L36 40 Z" fill="#5b21b6"/>
+        <path d="M17 24 Q30 18 43 24 L46 42 Q30 48 14 42 Z" fill="#a78bfa"/>
+        <ellipse cx="12" cy="30" rx="4" ry="7" fill="#fbbf24" transform="rotate(-20 12 30)"/>
+        <ellipse cx="48" cy="30" rx="4" ry="7" fill="#fbbf24" transform="rotate(20 48 30)"/>
+        <circle cx="30" cy="15" r="13" fill="#f3c9a0"/>
+        <path d="M17 15 A13 13 0 0 1 43 15 Q43 6 30 5 Q17 6 17 15 Z" fill="#5c3a21"/>
+        <circle cx="20" cy="12" r="4" fill="#5c3a21"/>
+        <ellipse cx="26" cy="17" rx="1.8" ry="2.4" fill="#1e1b4b"/>
+        <ellipse cx="34" cy="17" rx="1.8" ry="2.4" fill="#1e1b4b"/>
+        <ellipse cx="24" cy="20" rx="2.2" ry="1.6" fill="rgba(244,114,182,0.5)"/>
+        <ellipse cx="36" cy="20" rx="2.2" ry="1.6" fill="rgba(244,114,182,0.5)"/>
+        <path d="M26 23 Q30 26 34 23" stroke="#92400e" stroke-width="1" fill="none"/>
+      </svg>
+      <span class="valentina-companion-label">Tú</span>
+    </div>
+
+    <!-- ============ PANTALLA: RED TEJIDA (final del juego) ============ -->
+    <section id="screen-finalnetwork" data-screen class="hidden pt-6 sm:pt-8">
+      <div class="card p-6 sm:p-9 text-center">
+        <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-fuchsia-500 to-amber-400 text-4xl shadow-lg">🕸️</div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">Tu red tejida</h2>
+        <p class="text-slate-300 max-w-xl mx-auto text-sm sm:text-base">Acompañaste a las 8 mujeres de esta historia. Ninguna red se teje igual — esta es la tuya.</p>
+        <div id="finalNetworkGraphWrap" class="flex justify-center my-6"></div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
+          <div class="rounded-xl bg-slate-800/70 p-3">
+            <p class="text-[11px] text-slate-400">Recursos descubiertos</p>
+            <p id="finalStatResources" class="text-lg font-bold text-fuchsia-300"></p>
+          </div>
+          <div class="rounded-xl bg-slate-800/70 p-3">
+            <p class="text-[11px] text-slate-400">Logros</p>
+            <p id="finalStatAchievements" class="text-lg font-bold text-amber-300"></p>
+          </div>
+          <div class="rounded-xl bg-slate-800/70 p-3">
+            <p class="text-[11px] text-slate-400">Estrellas del mapa</p>
+            <p id="finalStatStars" class="text-lg font-bold text-emerald-300"></p>
+          </div>
+          <div class="rounded-xl bg-slate-800/70 p-3">
+            <p class="text-[11px] text-slate-400">Historias completadas</p>
+            <p id="finalStatChars" class="text-lg font-bold text-sky-300"></p>
+          </div>
+        </div>
+        <div id="finalEndingBreakdown" class="mt-5 text-sm text-slate-300"></div>
+      </div>
+
+      <div class="card p-5 sm:p-7 mt-4">
+        <div class="flex items-center justify-between mb-1 flex-wrap gap-2">
+          <h3 class="font-bold text-fuchsia-200">📋 Mi Red de Apoyo — resumen final</h3>
+          <button id="btnPrintFinalPlan" class="btn-ghost text-xs sm:text-sm">🖨️ Descargar / Imprimir</button>
+        </div>
+        <div id="finalActionPlanPrintable" class="rounded-xl bg-white text-slate-900 p-5 space-y-3 mt-3">
+          <img src="assets/img/logos-institucionales.png" alt="Alcaldía Mayor de Bogotá D.C · Alcaldía Local de San Cristóbal · Bogotá" class="w-full h-auto mb-1" onerror="this.style.display='none'" />
+          <div class="text-center border-b border-slate-200 pb-3">
+            <p class="text-lg font-extrabold">🕸️ Mi Red de Apoyo — Resumen final</p>
+            <p id="finalPlanPlayerName" class="text-sm text-slate-600"></p>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Historias acompañadas</p>
+            <ul id="finalPlanChars" class="text-sm mt-1 space-y-0.5"></ul>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Instituciones de apoyo descubiertas</p>
+            <ul id="finalPlanResources" class="text-sm mt-1 space-y-0.5"></ul>
+          </div>
+          <div class="rounded-lg bg-rose-50 border border-rose-200 p-2.5 text-sm">
+            <p class="font-bold text-rose-700">Ruta de emergencia</p>
+            <p class="text-rose-800">Línea 123 (emergencias) · Línea Púrpura 01 8000 112 137 · Línea 155</p>
+          </div>
+          <p class="text-[10px] text-slate-400 text-center pt-1">Generado por "Mi Red de Apoyo" — GESEG · Alcaldía Local de San Cristóbal · Contrato 43226</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2.5 justify-center mt-5">
+        <button id="btnFinalReplay" class="btn-primary">↺ Jugar de nuevo</button>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA: JUEGO (NOVELA VISUAL) ============ -->
+    <section id="screen-game" data-screen class="hidden pt-4 sm:pt-6">
+
+      <!-- HUD -->
+      <div class="card p-3 sm:p-4 mb-3 flex flex-wrap items-center gap-3 justify-between">
+        <div class="flex items-center gap-2 min-w-0">
+          <div id="hudAvatar" class="h-9 w-9 shrink-0 rounded-full overflow-hidden bg-slate-800"></div>
+          <div class="min-w-0">
+            <p id="hudName" class="font-semibold text-sm leading-tight truncate"></p>
+            <p id="hudScenario" class="text-[11px] text-slate-400 leading-tight truncate"></p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <div class="stat-chip" title="Fortaleza de tu red de apoyo">
+            <span>🕸️</span><div class="stat-bar"><div id="barRed" class="stat-fill bg-fuchsia-400"></div></div>
+          </div>
+          <div class="stat-chip" title="Bienestar emocional">
+            <span>💗</span><div class="stat-bar"><div id="barBienestar" class="stat-fill bg-rose-400"></div></div>
+          </div>
+          <div class="stat-chip" title="Conocimiento sobre rutas de atención">
+            <span>💡</span><div class="stat-bar"><div id="barConocimiento" class="stat-fill bg-amber-300"></div></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button id="btnNexaStory" type="button" aria-label="Pista de Nexa" title="Pista de Nexa" class="nexa-tip-btn nexa-tip-btn--inline"></button>
+          <button id="btnSpeech" class="btn-ghost text-xs sm:text-sm" title="Narración por voz">🔊</button>
+          <button id="btnNetwork" class="btn-ghost text-xs sm:text-sm">📇 Mi Red</button>
+          <button id="btnResources" class="btn-ghost text-xs sm:text-sm">📖 Recursos</button>
+          <button id="btnMenu" class="btn-ghost text-xs sm:text-sm">☰</button>
+        </div>
+      </div>
+
+      <!-- ESCENA -->
+      <div id="sceneWrap" class="card overflow-hidden">
+        <div id="sceneBg" class="scene-bg px-5 py-8 sm:px-9 sm:py-12 min-h-[220px] flex flex-col sm:flex-row sm:items-end gap-4 transition-all duration-500">
+          <div id="scenePortrait" class="portrait-wrap shrink-0"></div>
+          <div class="max-w-2xl">
+            <div class="flex items-center gap-2 mb-1.5">
+              <p id="speakerName" class="text-xs font-bold uppercase tracking-wider text-fuchsia-300"></p>
+              <button id="btnListen" class="text-[11px] font-semibold text-fuchsia-200/80 hover:text-fuchsia-100 bg-white/5 hover:bg-white/10 rounded-full px-2 py-0.5" title="Escuchar este texto">🔊 Escuchar</button>
+            </div>
+            <p id="sceneText" class="text-base sm:text-lg leading-relaxed text-white drop-shadow-md whitespace-pre-line"></p>
+          </div>
+        </div>
+
+        <div id="choicesWrap" class="p-4 sm:p-5 space-y-2.5 bg-slate-900/70"></div>
+
+        <div id="networkNode" class="hidden p-4 sm:p-5 bg-slate-900/70 space-y-3">
+          <p class="text-sm text-slate-300">Toca un contacto para pedirle consejo. Puedes hablar con varios antes de decidir.</p>
+          <div id="networkOptionsWrap" class="grid sm:grid-cols-2 gap-2.5"></div>
+          <div id="networkAdvice" class="hidden rounded-xl bg-slate-800/80 border border-slate-700 p-3.5 text-sm"></div>
+          <button id="networkContinueBtn" class="btn-primary w-full sm:w-auto mt-2">Tomar una decisión →</button>
+        </div>
+
+        <div id="chatNode" class="hidden p-4 sm:p-5 bg-slate-900/70">
+          <div id="chatBubbles" class="chat-phone space-y-2"></div>
+          <button id="chatContinueBtn" class="btn-primary w-full sm:w-auto mt-3 hidden">Continuar →</button>
+        </div>
+
+        <div id="minigameNode" class="hidden p-4 sm:p-5 bg-slate-900/70 space-y-3">
+          <p id="minigameInstructions" class="text-sm text-slate-300"></p>
+          <div id="minigameItems" class="space-y-2"></div>
+          <div class="flex gap-2.5 flex-wrap">
+            <button id="minigameCheckBtn" class="btn-primary">Comprobar ✓</button>
+            <button id="minigameContinueBtn" class="btn-ghost hidden">Continuar →</button>
+          </div>
+        </div>
+
+        <div id="tallyNode" class="hidden p-4 sm:p-5 bg-slate-900/70 space-y-3">
+          <p class="text-sm text-slate-300">📊 <strong>Modo taller:</strong> registra cuántas participantes votaron a mano alzada por cada opción.</p>
+          <div id="tallyOptionsWrap" class="space-y-2.5"></div>
+          <button id="tallyConfirmBtn" class="btn-primary w-full sm:w-auto">Confirmar votación de la sala →</button>
+        </div>
+
+        <div id="feedbackWrap" class="hidden p-4 sm:p-5 bg-slate-900/90 border-t border-slate-700/60">
+          <div class="flex gap-2.5 items-start">
+            <span class="text-xl leading-none" id="feedbackIcon">💬</span>
+            <p id="feedbackText" class="text-sm text-slate-200 leading-relaxed"></p>
+          </div>
+          <button id="feedbackContinueBtn" class="btn-primary mt-3">Continuar →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA: FINAL ============ -->
+    <section id="screen-ending" data-screen class="hidden pt-6 sm:pt-8">
+      <div class="card p-6 sm:p-9 text-center">
+        <div id="endingIcon" class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl text-4xl"></div>
+        <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">Final de la historia</p>
+        <h2 id="endingTitle" class="text-2xl sm:text-3xl font-extrabold mb-3"></h2>
+        <p id="endingText" class="text-slate-200 leading-relaxed max-w-2xl mx-auto"></p>
+
+        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto mt-6">
+          <div class="rounded-xl bg-slate-800/70 p-3">
+            <p class="text-[11px] text-slate-400">Red de apoyo</p>
+            <p id="endStatRed" class="text-lg font-bold text-fuchsia-300"></p>
+          </div>
+          <div class="rounded-xl bg-slate-800/70 p-3">
+            <p class="text-[11px] text-slate-400">Bienestar</p>
+            <p id="endStatBienestar" class="text-lg font-bold text-rose-300"></p>
+          </div>
+          <div class="rounded-xl bg-slate-800/70 p-3">
+            <p class="text-[11px] text-slate-400">Conocimiento</p>
+            <p id="endStatConocimiento" class="text-lg font-bold text-amber-300"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-5 sm:p-7 mt-4" id="achievementsCard">
+        <h3 class="font-bold text-fuchsia-200 mb-3">🏆 Logros desbloqueados</h3>
+        <div id="achievementsList" class="grid sm:grid-cols-2 gap-2.5"></div>
+      </div>
+
+      <!-- FICHA DESCARGABLE / IMPRIMIBLE -->
+      <div class="card p-5 sm:p-7 mt-4" id="actionPlanCard">
+        <div class="flex items-center justify-between mb-1 flex-wrap gap-2">
+          <h3 class="font-bold text-fuchsia-200">📋 Mi ficha de red de apoyo</h3>
+          <button id="btnPrintPlan" class="btn-ghost text-xs sm:text-sm">🖨️ Descargar / Imprimir</button>
+        </div>
+        <p id="syncStatus" class="text-xs text-slate-400 mb-2"></p>
+        <div id="actionPlanPrintable" class="rounded-xl bg-white text-slate-900 p-5 space-y-3">
+          <img src="assets/img/logos-institucionales.png" alt="Alcaldía Mayor de Bogotá D.C · Alcaldía Local de San Cristóbal · Bogotá" class="w-full h-auto mb-1"
+            onerror="this.style.display='none'" />
+          <div class="text-center border-b border-slate-200 pb-3">
+            <p class="text-lg font-extrabold">🤝 Mi Red de Apoyo</p>
+            <p id="planCharName" class="text-sm text-slate-600"></p>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Personas de confianza</p>
+            <ul id="planContacts" class="text-sm mt-1 space-y-0.5"></ul>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Instituciones de apoyo que conocí</p>
+            <ul id="planResources" class="text-sm mt-1 space-y-0.5"></ul>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Señales de alerta que identifiqué</p>
+            <ul id="planSignals" class="text-sm mt-1 space-y-0.5"></ul>
+          </div>
+          <div class="rounded-lg bg-rose-50 border border-rose-200 p-2.5 text-sm">
+            <p class="font-bold text-rose-700">Ruta de emergencia</p>
+            <p class="text-rose-800">Línea 123 (emergencias) · Línea Púrpura 01 8000 112 137 · Línea 155</p>
+          </div>
+          <p class="text-[10px] text-slate-400 text-center pt-1">Generado por "Mi Red de Apoyo" — Alcaldía Local de San Cristóbal</p>
+        </div>
+      </div>
+
+      <div class="card p-5 sm:p-7 mt-4">
+        <h3 class="font-bold text-fuchsia-200 mb-3">Para conversar en grupo</h3>
+        <ul id="debriefQuestions" class="space-y-2 text-sm text-slate-200 list-disc list-inside"></ul>
+      </div>
+
+      <div class="flex flex-wrap gap-2.5 justify-center mt-5">
+        <button id="btnViewNetworkEnd" class="btn-ghost">🕸️ Ver mi mapa de red</button>
+        <button id="btnViewResourcesEnd" class="btn-ghost">📖 Ver directorio completo</button>
+        <button id="btnReplayOther" class="btn-ghost">🔁 Jugar con otro personaje</button>
+        <button id="btnReplaySame" class="btn-ghost">↺ Volver a intentar esta historia</button>
+        <button id="btnBackToMap" class="btn-primary hidden">← Volver al mapa</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ MODAL: RECURSOS ============ -->
+  <div id="modalResources" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">📖 Directorio de rutas de apoyo en Bogotá</h3>
+        <button data-close-modal class="btn-ghost !px-2 !py-1">✕</button>
+      </div>
+      <div id="resourcesList" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1"></div>
+      <p class="text-[11px] text-slate-400 mt-4">
+        Los números y direcciones deben ser verificados por el equipo facilitador antes de cada sesión, ya que los servicios públicos pueden actualizar sus canales de atención.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: ACCESIBILIDAD ============ -->
+  <div id="modalA11y" class="modal-backdrop hidden">
+    <div class="modal-card !max-w-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">⚙️ Accesibilidad</h3>
+        <button data-close-modal class="btn-ghost !px-2 !py-1">✕</button>
+      </div>
+      <div class="space-y-5">
+        <div>
+          <p class="text-sm font-semibold text-slate-200 mb-2">Tamaño de letra</p>
+          <div class="flex gap-2">
+            <button data-fontscale="sm" class="a11y-opt-btn flex-1">A<span class="text-[10px]">-</span></button>
+            <button data-fontscale="normal" class="a11y-opt-btn flex-1">A</button>
+            <button data-fontscale="lg" class="a11y-opt-btn flex-1">A<span class="text-[10px]">+</span></button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <p class="text-sm font-semibold text-slate-200">Alto contraste</p>
+          <button id="btnHighContrast" class="a11y-toggle" role="switch" aria-checked="false"><span></span></button>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-200 flex justify-between">Velocidad de la narración <span id="rateValue" class="text-slate-400 font-normal">1.0×</span></label>
+          <input id="rateSlider" type="range" min="0.7" max="1.3" step="0.1" value="1" class="w-full mt-2 accent-fuchsia-500" />
+        </div>
+        <p class="text-[11px] text-slate-400">El texto de cada escena siempre queda visible en pantalla como subtítulo, con o sin narración activada.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: MAPA DE RED ============ -->
+  <div id="modalNetwork" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-lg font-bold">🕸️ Tu mapa de red de apoyo</h3>
+        <button data-close-modal class="btn-ghost !px-2 !py-1">✕</button>
+      </div>
+      <p class="text-xs text-slate-400 mb-3">🟢 Vínculo fuerte · 🟡 Vínculo débil · 🔴 Vínculo casi inactivo</p>
+      <div id="networkMapWrap" class="flex justify-center"></div>
+      <div id="networkMapList" class="space-y-2 mt-4 max-h-[30vh] overflow-y-auto pr-1"></div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: MENÚ ============ -->
+  <div id="modalMenu" class="modal-backdrop hidden">
+    <div class="modal-card !max-w-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">☰ Menú</h3>
+        <button data-close-modal class="btn-ghost !px-2 !py-1">✕</button>
+      </div>
+      <div class="space-y-2">
+        <button id="menuRestartChar" class="btn-ghost w-full text-left">🔁 Reiniciar esta historia</button>
+        <button id="menuChangeChar" class="btn-ghost w-full text-left">👥 Cambiar de personaje</button>
+        <button id="menuResources" class="btn-ghost w-full text-left">📖 Directorio de recursos</button>
+        <button id="menuA11y" class="btn-ghost w-full text-left">⚙️ Accesibilidad</button>
+        <button id="menuClearData" class="btn-ghost w-full text-left">🗑️ Borrar mis datos de este dispositivo</button>
+        <button id="menuExit" class="btn-ghost w-full text-left text-rose-300">⨯ Salida rápida</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: PANEL DE FACILITADORA ============ -->
+  <div id="modalFacilitator" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">🧑‍🏫 Modo facilitadora</h3>
+        <button data-close-modal class="btn-ghost !px-2 !py-1">✕</button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-200 mb-2">📋 Elegir historia para el grupo</p>
+          <div id="facilitatorCharList" class="grid sm:grid-cols-2 gap-2"></div>
+        </div>
+        <div class="border-t border-slate-700 pt-3">
+          <p class="text-sm font-semibold text-slate-200 mb-2">👥 Registrar participantes</p>
+          <div class="tally-row">
+            <div class="flex-1">Personas presentes en la sesión</div>
+            <div class="tally-stepper">
+              <button type="button" id="facParticipantsMinus">−</button>
+              <input type="number" min="0" value="0" id="facParticipantsCount" readonly />
+              <button type="button" id="facParticipantsPlus">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-slate-700 pt-3">
+          <p class="text-sm font-semibold text-slate-200 mb-2">💬 Preguntas de debrief</p>
+          <ul id="facDebriefList" class="space-y-1.5 text-sm text-slate-300 list-disc list-inside"></ul>
+        </div>
+        <div class="border-t border-slate-700 pt-3">
+          <p class="text-sm font-semibold text-slate-200 mb-2">📊 Resumen de decisiones del grupo</p>
+          <div id="facDecisionsSummary" class="text-sm text-slate-300 space-y-1"></div>
+        </div>
+        <div class="border-t border-slate-700 pt-3 flex flex-wrap gap-2">
+          <button id="facPrintPlan" class="btn-ghost !text-sm">🖨️ Imprimir ficha de red de apoyo</button>
+          <button id="facProjectorMode" class="btn-ghost !text-sm">🖥️ Modo proyector</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: CAPÍTULO V — PRÓXIMAMENTE ============ -->
+  <div id="modalComingSoon" class="modal-backdrop hidden">
+    <div class="modal-card !max-w-sm text-center">
+      <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-sky-500 to-fuchsia-500 text-3xl shadow-lg">🎨</div>
+      <h3 class="text-lg font-bold mb-1">Valentina Ríos</h3>
+      <p class="text-xs text-slate-400 mb-3">Joven artista del barrio · Capítulo V · Diversidad</p>
+      <p class="text-sm text-slate-300 leading-relaxed">Este capítulo estará disponible pronto. ¡Gracias por ser parte de Mi Red de Apoyo!</p>
+      <button data-close-modal class="btn-primary w-full mt-5">Entendido</button>
+    </div>
+  </div>
+
+  <!-- Scripts clásicos (no type="module") a propósito: deben poder abrirse
+       con doble clic en index.html, sin servidor. El orden importa. -->
+  <script src="js/config.js?v=7"></script>
+  <script src="js/avatars.js?v=7"></script>
+  <script src="js/data/world/npcs.js?v=7"></script>
+  <script src="js/data/world/locations.js?v=7"></script>
+  <script src="js/data/world/events.js?v=7"></script>
+  <script src="js/data/world/resources.js?v=7"></script>
+  <script src="js/data/chapters.js?v=7"></script>
+  <script src="js/data/achievements.js?v=7"></script>
+  <script src="js/data/endings.js?v=7"></script>
+  <script src="js/data/debrief.js?v=7"></script>
+  <script src="js/data/characters/parejas.js?v=7"></script>
+  <script src="js/data/characters/trabajo.js?v=7"></script>
+  <script src="js/data/characters/publico.js?v=7"></script>
+  <script src="js/data/characters/digital.js?v=7"></script>
+  <script src="js/data/characters/index.js?v=7"></script>
+  <script src="js/engine.js?v=8"></script>
+  <script src="js/audio.js?v=2"></script>
+  <script src="js/worldmap.js?v=3"></script>
+  <script src="js/nexa.js?v=7"></script>
+  <script src="js/ui.js?v=3"></script>
+</body>
+</html>
