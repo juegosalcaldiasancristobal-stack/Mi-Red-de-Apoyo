@@ -606,14 +606,16 @@
   <script src="js/nexa.js?v=7"></script>
   <script src="js/ui.js?v=3"></script>
   <script>
-  /* ===== REGISTRO SHEETS v7 - Mi Red de Apoyo =====
+  /* ===== REGISTRO SHEETS - Mi Red de Apoyo (con mapa mundo) =====
+     Flujo nuevo: screen-intro → nuestro modal → screen-worldmap
+     (mapa estilo Mario vía MRA_UI.enterWorldMap()).
      cloneNode elimina el listener de engine.js en startBtn.
-     Modal propio → Sheets → window.__game navega a personajes.
-  ================================================== */
+  ============================================================= */
   (function(){
     var EP = "https://script.google.com/macros/s/AKfycbxsjgvPglrhTQTCZsfXcQCkph6HyDOy4XvDySDtlnQdBeJT_RfRgut7sDsxldEqyoCf/exec";
     var hecho = false;
 
+    /* ---- Toast ---- */
     function toast(msg, color){
       var t = document.createElement("div");
       t.textContent = msg;
@@ -626,14 +628,15 @@
       setTimeout(function(){ t.remove(); },3500);
     }
 
+    /* ---- Envio a Google Sheets ---- */
     function enviar(d){
-      fetch(EP, {
+      fetch(EP,{
         method:"POST",
         headers:{"Content-Type":"text/plain;charset=utf-8"},
         body:JSON.stringify(d)
       })
       .then(function(res){ return res.text().then(function(txt){
-        try { var j=JSON.parse(txt); j.ok ? toast("Registro guardado correctamente") : toast("Error: "+(j.error||txt),"#dc2626"); }
+        try{ var j=JSON.parse(txt); j.ok ? toast("Registro guardado correctamente") : toast("Error: "+(j.error||txt),"#dc2626"); }
         catch(e){ toast("Registro guardado correctamente"); }
       });})
       .catch(function(){
@@ -643,18 +646,27 @@
       console.info("[Sheets MRA]", d.nombre, "/", d.edad);
     }
 
-    function irAPersonajes(nom, mail, edad, modo){
-      var g = window.__game;
-      if (!g || typeof g.renderCharacterSelect !== "function"){
-        console.error("[Sheets MRA] window.__game no disponible");
-        return;
+    /* ---- Ir al mapa mundo (nuevo flujo) ---- */
+    function irAlMapa(nom, mail, edad, modo){
+      /* Sincronizar estado con engine.js */
+      if (window.__game) {
+        window.__game.state.playMode = modo;
+        window.__game.state.player   = { name: nom, age: edad, email: mail };
       }
-      g.state.playMode = modo;
-      g.state.player = { name: nom, age: edad, email: mail };
-      g.renderCharacterSelect();
-      g.showScreen("screen-select");
+      /* MRA_UI.enterWorldMap() muestra screen-worldmap y arranca el Mario */
+      if (window.MRA_UI && typeof window.MRA_UI.enterWorldMap === "function") {
+        window.MRA_UI.enterWorldMap();
+      } else {
+        /* Fallback: ir directo a seleccion de personajes */
+        console.warn("[Sheets MRA] MRA_UI no disponible, usando fallback screen-select");
+        if (window.__game) {
+          window.__game.renderCharacterSelect && window.__game.renderCharacterSelect();
+          window.__game.showScreen("screen-select");
+        }
+      }
     }
 
+    /* ---- Modal de registro ---- */
     function abrirModal(){
       if (hecho) return;
       var w = document.createElement("div");
@@ -696,8 +708,9 @@
       document.getElementById("sr-skip").onclick = function(){
         hecho=true; w.remove();
         var modo=(document.querySelector("input[name=playMode]:checked")||{}).value||"individual";
-        irAPersonajes("","","",modo);
+        irAlMapa("","","",modo);
       };
+
       document.getElementById("sr-ok").onclick = function(){
         var nom =(document.getElementById("sr-nom").value||"").trim();
         var mail=(document.getElementById("sr-mail").value||"").trim();
@@ -710,11 +723,13 @@
         btn.disabled=true; btn.textContent="Guardando..."; err.textContent="";
         enviar({evento:"registro",nombre:nom,correo:mail,edad:edad,modo:modo,completo:false});
         hecho=true; w.remove();
-        irAPersonajes(nom,mail,edad,modo);
+        irAlMapa(nom,mail,edad,modo);
       };
+
       w.addEventListener("keydown",function(e){ if(e.key==="Enter") document.getElementById("sr-ok").click(); });
     }
 
+    /* ---- cloneNode: elimina el listener de engine.js ---- */
     document.addEventListener("DOMContentLoaded", function(){
       var oldBtn = document.getElementById("startBtn");
       if (!oldBtn){ console.error("[Sheets MRA] #startBtn no encontrado"); return; }
@@ -724,7 +739,7 @@
         if (hecho) return;
         abrirModal();
       });
-      console.info("[Sheets MRA] startBtn reemplazado — listo");
+      console.info("[Sheets MRA] listo — va a screen-worldmap tras el registro");
     });
 
   })();
