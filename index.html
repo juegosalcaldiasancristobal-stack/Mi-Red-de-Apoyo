@@ -605,5 +605,130 @@
   <script src="js/worldmap.js?v=3"></script>
   <script src="js/nexa.js?v=7"></script>
   <script src="js/ui.js?v=3"></script>
+  <script>
+  /* ===== REGISTRO SHEETS v7 - Mi Red de Apoyo =====
+     cloneNode elimina el listener de engine.js en startBtn.
+     Modal propio → Sheets → window.__game navega a personajes.
+  ================================================== */
+  (function(){
+    var EP = "https://script.google.com/macros/s/AKfycbxsjgvPglrhTQTCZsfXcQCkph6HyDOy4XvDySDtlnQdBeJT_RfRgut7sDsxldEqyoCf/exec";
+    var hecho = false;
+
+    function toast(msg, color){
+      var t = document.createElement("div");
+      t.textContent = msg;
+      t.style.cssText = "position:fixed;bottom:1.5rem;right:1.5rem;z-index:999999;"+
+        "background:"+(color||"#16a34a")+";color:#fff;font-family:system-ui,sans-serif;"+
+        "font-size:.85rem;font-weight:600;padding:.65rem 1.1rem;border-radius:.6rem;"+
+        "box-shadow:0 4px 20px rgba(0,0,0,.4)";
+      document.body.appendChild(t);
+      setTimeout(function(){ t.style.transition="opacity .6s"; t.style.opacity="0"; },2800);
+      setTimeout(function(){ t.remove(); },3500);
+    }
+
+    function enviar(d){
+      fetch(EP, {
+        method:"POST",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(d)
+      })
+      .then(function(res){ return res.text().then(function(txt){
+        try { var j=JSON.parse(txt); j.ok ? toast("Registro guardado correctamente") : toast("Error: "+(j.error||txt),"#dc2626"); }
+        catch(e){ toast("Registro guardado correctamente"); }
+      });})
+      .catch(function(){
+        fetch(EP,{method:"POST",mode:"no-cors",body:JSON.stringify(d)})
+          .then(function(){ toast("Registro guardado correctamente"); });
+      });
+      console.info("[Sheets MRA]", d.nombre, "/", d.edad);
+    }
+
+    function irAPersonajes(nom, mail, edad, modo){
+      var g = window.__game;
+      if (!g || typeof g.renderCharacterSelect !== "function"){
+        console.error("[Sheets MRA] window.__game no disponible");
+        return;
+      }
+      g.state.playMode = modo;
+      g.state.player = { name: nom, age: edad, email: mail };
+      g.renderCharacterSelect();
+      g.showScreen("screen-select");
+    }
+
+    function abrirModal(){
+      if (hecho) return;
+      var w = document.createElement("div");
+      w.style.cssText = "position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.88);"+
+        "display:flex;align-items:center;justify-content:center;padding:1rem";
+      w.innerHTML =
+        "<div style='background:#1e293b;border:1.5px solid #7c3aed;border-radius:1rem;"+
+        "padding:1.75rem 2rem;max-width:420px;width:100%;font-family:system-ui,sans-serif'>"+
+        "<div style='text-align:center;margin-bottom:1.25rem'>"+
+          "<h2 style='color:#f1f5f9;font-size:1.1rem;font-weight:700;margin:0 0 .2rem'>Registro de participaci&#243;n</h2>"+
+          "<p style='color:#94a3b8;font-size:.76rem;margin:0'>Alcald&#237;a Local de San Crist&#243;bal &middot; CONVIVE 360</p>"+
+        "</div>"+
+        "<label style='color:#e2e8f0;font-size:.8rem;font-weight:600;display:block;margin-bottom:.3rem'>Nombre completo <span style='color:#f472b6'>*</span></label>"+
+        "<input id='sr-nom' type='text' placeholder='Mar&#237;a Fernanda G&#243;mez' autocomplete='name'"+
+          " style='width:100%;box-sizing:border-box;border-radius:.5rem;background:#0f172a;border:1px solid #475569;padding:.6rem .875rem;color:#fff;font-size:.875rem;outline:none;margin-bottom:.8rem'/>"+
+        "<label style='color:#e2e8f0;font-size:.8rem;font-weight:600;display:block;margin-bottom:.3rem'>Correo electr&#243;nico <span style='color:#94a3b8;font-weight:400'>(opcional)</span></label>"+
+        "<input id='sr-mail' type='email' placeholder='tucorreo@ejemplo.com' autocomplete='email'"+
+          " style='width:100%;box-sizing:border-box;border-radius:.5rem;background:#0f172a;border:1px solid #475569;padding:.6rem .875rem;color:#fff;font-size:.875rem;outline:none;margin-bottom:.8rem'/>"+
+        "<label style='color:#e2e8f0;font-size:.8rem;font-weight:600;display:block;margin-bottom:.3rem'>Rango de edad <span style='color:#f472b6'>*</span></label>"+
+        "<select id='sr-edad' style='width:100%;box-sizing:border-box;border-radius:.5rem;background:#0f172a;border:1px solid #475569;padding:.6rem .875rem;color:#fff;font-size:.875rem;outline:none;margin-bottom:1.1rem'>"+
+          "<option value=''>Selecciona un rango&#8230;</option>"+
+          "<option value='10-14'>10 a 14 a&#241;os</option>"+
+          "<option value='15-17'>15 a 17 a&#241;os</option>"+
+          "<option value='18-25'>18 a 25 a&#241;os</option>"+
+          "<option value='26-35'>26 a 35 a&#241;os</option>"+
+          "<option value='36-45'>36 a 45 a&#241;os</option>"+
+          "<option value='46-59'>46 a 59 a&#241;os</option>"+
+          "<option value='60+'>60 a&#241;os o m&#225;s</option>"+
+        "</select>"+
+        "<p id='sr-err' style='color:#f87171;font-size:.75rem;min-height:1rem;margin:0 0 .75rem;text-align:center'></p>"+
+        "<div style='display:flex;gap:.6rem'>"+
+          "<button id='sr-skip' style='flex:1;padding:.65rem;border-radius:.5rem;background:transparent;border:1px solid #475569;color:#94a3b8;font-size:.8rem;cursor:pointer'>Omitir</button>"+
+          "<button id='sr-ok' style='flex:2;padding:.65rem;border-radius:.5rem;background:#7c3aed;border:none;color:#fff;font-size:.85rem;font-weight:600;cursor:pointer'>Comenzar a jugar &#8594;</button>"+
+        "</div>"+
+      "</div>";
+      document.body.appendChild(w);
+      setTimeout(function(){ var n=document.getElementById("sr-nom"); if(n) n.focus(); },120);
+
+      document.getElementById("sr-skip").onclick = function(){
+        hecho=true; w.remove();
+        var modo=(document.querySelector("input[name=playMode]:checked")||{}).value||"individual";
+        irAPersonajes("","","",modo);
+      };
+      document.getElementById("sr-ok").onclick = function(){
+        var nom =(document.getElementById("sr-nom").value||"").trim();
+        var mail=(document.getElementById("sr-mail").value||"").trim();
+        var edad= document.getElementById("sr-edad").value||"";
+        var modo=(document.querySelector("input[name=playMode]:checked")||{}).value||"individual";
+        var err = document.getElementById("sr-err");
+        if(!nom) { err.textContent="Por favor ingresa tu nombre."; return; }
+        if(!edad){ err.textContent="Por favor selecciona tu rango de edad."; return; }
+        var btn=document.getElementById("sr-ok");
+        btn.disabled=true; btn.textContent="Guardando..."; err.textContent="";
+        enviar({evento:"registro",nombre:nom,correo:mail,edad:edad,modo:modo,completo:false});
+        hecho=true; w.remove();
+        irAPersonajes(nom,mail,edad,modo);
+      };
+      w.addEventListener("keydown",function(e){ if(e.key==="Enter") document.getElementById("sr-ok").click(); });
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+      var oldBtn = document.getElementById("startBtn");
+      if (!oldBtn){ console.error("[Sheets MRA] #startBtn no encontrado"); return; }
+      var newBtn = oldBtn.cloneNode(true);
+      oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+      newBtn.addEventListener("click", function(){
+        if (hecho) return;
+        abrirModal();
+      });
+      console.info("[Sheets MRA] startBtn reemplazado — listo");
+    });
+
+  })();
+  </script>
+
 </body>
 </html>
